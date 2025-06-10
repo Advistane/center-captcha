@@ -273,6 +273,7 @@
 				message.textContent = 'Verified! 🎉';
 				message.className = 'mt-4 text-center h-6 font-medium text-green-600';
 				if (isMobile) window.removeEventListener('deviceorientation', handleOrientation);
+				window.parent.postMessage('success', '*');
 			} else {
 				message.textContent = 'Not quite. Try again.';
 				message.className = 'mt-4 text-center h-6 font-medium text-red-600';
