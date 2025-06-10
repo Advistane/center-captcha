@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: 'Inter', sans-serif;
             overscroll-behavior: contain; /* Prevents pull-to-refresh on mobile */
@@ -38,12 +42,36 @@
         #shape {
             transition: all 0.05s linear;
         }
+
+        .shape-crosshair::before, .shape-crosshair::after {
+            content: '';
+            position: absolute;
+            background-color: rgba(255,255,255,0.7);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .shape-crosshair::before {
+            width: 100%;
+            height: 1.5px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .shape-crosshair::after {
+            height: 100%;
+            width: 1.5px;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen overflow-hidden">
 
 <div id="captcha-modal"
-     class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 relative">
+     class="bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl w-full max-w-sm md:max-w-md border border-gray-200 relative max-h-screen h-auto overflow-auto flex flex-col justify-between">
     <div id="permission-overlay"
          class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex-col items-center justify-center rounded-xl p-4 text-center hidden">
         <h2 class="text-xl font-bold text-gray-800">Tilt Controls Active</h2>
@@ -55,7 +83,7 @@
         <p id="permission-error" class="text-red-500 text-sm mt-4"></p>
     </div>
 
-    <div class="flex justify-between items-start mb-2">
+    <div class="flex justify-between items-start mb-1">
         <div>
             <h1 class="text-xl font-bold text-gray-800">Verify You Are Human</h1>
             <p id="instruction" class="text-sm text-gray-500 mt-1">Align the exact center of the shape to the exact center of the box.</p>
@@ -64,15 +92,15 @@
     </div>
 
     <div id="captcha-box"
-         class="relative w-full h-64 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden crosshair mt-4">
-        <div id="shape" class="absolute w-10 h-10 bg-blue-500 cursor-grab active:cursor-grabbing rounded-md shadow-lg"
+         class="relative w-full h-[min(40vw,40vh,300px)] min-h-[180px] max-h-[320px] bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden crosshair mt-2 flex-1">
+        <div id="shape" class="absolute w-10 h-10 bg-blue-500 cursor-grab active:cursor-grabbing rounded-md shadow-lg shape-crosshair"
              style="top: 50px; left: 50px;"></div>
     </div>
 
-    <div id="controls" class="grid grid-cols-3 gap-2 items-center justify-items-center mt-6">
+    <div id="controls" class="grid grid-cols-3 gap-1 items-center justify-items-center mt-2">
     </div>
 
-    <div class="mt-6">
+    <div class="mt-4">
         <button id="verify-btn"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
             Verify
@@ -106,7 +134,7 @@
 		// --- Tilt Control State ---
 		let neutralBeta = null;
 		let neutralGamma = null;
-		const sensitivity = 0.8;
+		const sensitivity = 0.7;
 
 		// --- Timer ---
 		function stopTimer() {
@@ -185,13 +213,13 @@
 		function setupDesktopControls() {
 			controlsContainer.innerHTML = `
                     <div></div>
-                    <button id="up-btn" class="control-btn w-12 h-12 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
+                    <button id="up-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
                     <div></div>
-                    <button id="left-btn" class="control-btn w-12 h-12 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
-                    <div class="w-12 h-12"></div>
-                    <button id="right-btn" class="control-btn w-12 h-12 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 5 7 7-7 7"/><path d="M5 12h14"/></svg></button>
+                    <button id="left-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+                    <div class="w-8 h-8"></div>
+                    <button id="right-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 5 7 7-7 7"/><path d="M5 12h14"/></svg></button>
                     <div></div>
-                    <button id="down-btn" class="control-btn w-12 h-12 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7 7 7-7"/><path d="M12 5v14"/></svg></button>
+                    <button id="down-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7 7 7-7"/><path d="M12 5v14"/></svg></button>
                     <div></div>`;
 
 			document.getElementById('up-btn').addEventListener('click', () => moveShape(0, -moveStep));
@@ -270,7 +298,7 @@
 			}
 
 			if (isMobile) {
-				instruction.textContent = "Tilt your phone to move the shape.";
+				instruction.textContent = "Tilt your phone to move the shape to the center of the box.";
 				controlsContainer.style.display = 'none';
 				permissionOverlay.style.display = 'flex';
 
