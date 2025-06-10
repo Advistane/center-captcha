@@ -261,12 +261,12 @@
 
 		// --- Verification ---
 		verifyBtn.addEventListener('click', () => {
-			const boxCenterX = captchaBox.offsetWidth / 2;
-			const boxCenterY = captchaBox.offsetHeight / 2;
-			const shapeCenterX = currentX + (shape.offsetWidth / 2);
-			const shapeCenterY = currentY + (shape.offsetHeight / 2);
+			const boxCenterX = Math.round(captchaBox.offsetWidth / 2);
+			const boxCenterY = Math.round(captchaBox.offsetHeight / 2);
+			const shapeCenterX = Math.round(currentX + (shape.offsetWidth / 2));
+			const shapeCenterY = Math.round(currentY + (shape.offsetHeight / 2));
 
-			const isCentered = Math.abs(boxCenterX - shapeCenterX) < 0.5 && Math.abs(boxCenterY - shapeCenterY) < 0.5;
+			const isCentered = Math.abs(boxCenterX - shapeCenterX) <= 2 && Math.abs(boxCenterY - shapeCenterY) <= 2;
 
 			if (isCentered) {
 				stopTimer();
