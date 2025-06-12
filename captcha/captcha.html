@@ -1,217 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Frustrating Centering Captcha</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            overscroll-behavior: contain; /* Prevents pull-to-refresh on mobile */
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Frustrating Centering Captcha</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+		}
 
-        .crosshair::before, .crosshair::after {
-            content: '';
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.15);
-            z-index: 0;
-        }
+		body {
+			font-family: 'Inter', sans-serif;
+			overscroll-behavior: contain;
+			/* Prevents pull-to-refresh on mobile */
+		}
 
-        .crosshair::before {
-            width: 100%;
-            height: 1px;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-        }
+		.crosshair::before,
+		.crosshair::after {
+			content: '';
+			position: absolute;
+			background-color: rgba(0, 0, 0, 0.15);
+			z-index: 0;
+		}
 
-        .crosshair::after {
-            height: 100%;
-            width: 1px;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-        }
+		.crosshair::before {
+			width: 100%;
+			height: 1px;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+		}
 
-        #shape {
-            transition: all 0.05s linear;
-        }
+		.crosshair::after {
+			height: 100%;
+			width: 1px;
+			left: 50%;
+			top: 0;
+			transform: translateX(-50%);
+		}
 
-        .shape-crosshair::before, .shape-crosshair::after {
-            content: '';
-            position: absolute;
-            background-color: rgba(255,255,255,0.7);
-            z-index: 2;
-            pointer-events: none;
-        }
+		#shape {
+			transition: all 0.05s linear;
+		}
 
-        .shape-crosshair::before {
-            width: 100%;
-            height: 1.5px;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-        }
+		.shape-crosshair::before,
+		.shape-crosshair::after {
+			content: '';
+			position: absolute;
+			background-color: rgba(255, 255, 255, 1);
+			z-index: 2;
+			pointer-events: none;
+		}
 
-        .shape-crosshair::after {
-            height: 100%;
-            width: 1.5px;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-        }
-    </style>
+		.shape-crosshair::before {
+			width: 100%;
+			height: 8.5px;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+		}
+
+		.shape-crosshair::after {
+			height: 100%;
+			width: 8.5px;
+			left: 50%;
+			top: 0;
+			transform: translateX(-50%);
+		}
+	</style>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen overflow-hidden">
 
-<div id="captcha-modal"
-     class="bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl w-full max-w-sm md:max-w-md border border-gray-200 relative max-h-screen h-auto overflow-auto flex flex-col justify-between">
-    <div id="permission-overlay"
-         class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex-col items-center justify-center rounded-xl p-4 text-center hidden">
-        <h2 class="text-xl font-bold text-gray-800">Tilt Controls Active</h2>
-        <p class="text-gray-600 mt-2 mb-6">This captcha uses your device's motion sensors. Tap below to begin.</p>
-        <button id="start-btn"
-                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105">
-            Start Captcha
-        </button>
-        <p id="permission-error" class="text-red-500 text-sm mt-4"></p>
-    </div>
+	<div id="captcha-modal"
+		class="bg-white p-2 sm:p-3 md:p-4 rounded-xl shadow-2xl w-full max-w-sm md:max-w-md border border-gray-200 relative max-h-[295px] h-[295px] flex flex-col justify-between">
+		<div id="permission-overlay"
+			class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex-col items-center justify-center rounded-xl p-4 text-center hidden">
+			<h2 class="text-xl font-bold text-gray-800">Tilt Controls Active</h2>
+			<p class="text-gray-600 mt-2 mb-6">This captcha uses your device's motion sensors. Tap below to begin.</p>
+			<button id="start-btn"
+				class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105">
+				Start Captcha
+			</button>
+			<p id="permission-error" class="text-red-500 text-sm mt-4"></p>
+		</div>
 
-    <div class="flex justify-between items-start mb-1">
-        <div>
-            <h1 class="text-xl font-bold text-gray-800">Verify You Are Human</h1>
-            <p id="instruction" class="text-sm text-gray-500 mt-1">Align the exact center of the shape to the exact center of the box.</p>
-        </div>
-        <div id="timer" class="text-lg font-mono font-bold text-red-500 bg-red-100 px-3 py-1 rounded-md">00:30</div>
-    </div>
+		<div class="flex justify-between items-start mb-0.5">
+			<div>
+				<h1 class="text-lg font-bold text-gray-800">Verify You Are Human</h1>
+				<p id="instruction" class="text-xs text-gray-500 mt-0.5">Align the exact center of the shape to the
+					exact center of the box.</p>
+			</div>
+			<div id="timer" class="text-base font-mono font-bold text-red-500 bg-red-100 px-2 py-0.5 rounded-md">00:30
+			</div>
+		</div>
 
-    <div id="captcha-box"
-         class="relative w-full h-[min(40vw,40vh,300px)] min-h-[180px] max-h-[320px] bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden crosshair mt-2 flex-1">
-        <div id="shape" class="absolute w-10 h-10 bg-blue-500 cursor-grab active:cursor-grabbing rounded-md shadow-lg shape-crosshair"
-             style="top: 50px; left: 50px;"></div>
-    </div>
+		<div class="flex gap-2 flex-1 mt-1 mb-1">
+			<div id="captcha-box"
+				class="relative w-full h-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden crosshair">
+				<div id="shape"
+					class="absolute w-10 h-10 bg-blue-500 cursor-grab active:cursor-grabbing rounded-md shadow-lg shape-crosshair"
+					style="top: 50px; left: 50px;"></div>
+			</div>
 
-    <div id="controls" class="grid grid-cols-3 gap-1 items-center justify-items-center mt-2">
-    </div>
+			<div id="controls" class="flex flex-col gap-0.5 justify-center">
+				<button id="up-btn"
+					class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg
+						xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m5 12 7-7 7 7" />
+						<path d="M12 19V5" />
+					</svg></button>
+				<button id="left-btn"
+					class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg
+						xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m12 19-7-7 7-7" />
+						<path d="M19 12H5" />
+					</svg></button>
+				<button id="right-btn"
+					class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg
+						xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m12 5 7 7-7 7" />
+						<path d="M5 12h14" />
+					</svg></button>
+				<button id="down-btn"
+					class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg
+						xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m5 12 7 7 7-7" />
+						<path d="M12 5v14" />
+					</svg></button>
+			</div>
+		</div>
 
-    <div class="mt-4">
-        <button id="verify-btn"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-            Verify
-        </button>
-        <div id="message" class="mt-4 text-center h-6 font-medium"></div>
-    </div>
-</div>
+		<div >
+			<button id="verify-btn"
+				class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+				Verify
+			</button>
+		</div>
+	</div>
 
-<script>
-	document.addEventListener('DOMContentLoaded', () => {
-		// --- DOM Elements ---
-		const captchaBox = document.getElementById('captcha-box');
-		const shape = document.getElementById('shape');
-		const message = document.getElementById('message');
-		const timerDisplay = document.getElementById('timer');
-		const verifyBtn = document.getElementById('verify-btn');
-		const controlsContainer = document.getElementById('controls');
-		const instruction = document.getElementById('instruction');
-		const permissionOverlay = document.getElementById('permission-overlay');
-		const startBtn = document.getElementById('start-btn');
-		const permissionError = document.getElementById('permission-error');
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			// --- DOM Elements ---
+			const captchaBox = document.getElementById('captcha-box');
+			const shape = document.getElementById('shape');
+			const timerDisplay = document.getElementById('timer');
+			const verifyBtn = document.getElementById('verify-btn');
+			const controlsContainer = document.getElementById('controls');
+			const instruction = document.getElementById('instruction');
+			const permissionOverlay = document.getElementById('permission-overlay');
+			const startBtn = document.getElementById('start-btn');
+			const permissionError = document.getElementById('permission-error');
 
-		// --- State ---
-		let currentX = 0, currentY = 0;
-		const moveStep = 1;
-		let timerId = null;
-		const TIME_LIMIT = 30; // Time limit in seconds
-		let timeLeft = TIME_LIMIT;
-		let isMobile = false;
+			// --- State ---
+			let currentX = 0, currentY = 0;
+			const moveStep = 1;
+			let timerId = null;
+			const TIME_LIMIT = 30; // Time limit in seconds
+			let timeLeft = TIME_LIMIT;
+			let isMobile = false;
 
-		// --- Tilt Control State ---
-		let neutralBeta = null;
-		let neutralGamma = null;
-		const sensitivity = 0.7;
+			// --- Tilt Control State ---
+			let neutralBeta = null;
+			let neutralGamma = null;
+			const sensitivity = 0.7;
 
-		// --- Timer ---
-		function stopTimer() {
-			clearInterval(timerId);
-			timerId = null;
-		}
-
-		function updateTimerDisplay() {
-			timerDisplay.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
-		}
-
-		function startTimer() {
-			if (timerId) stopTimer();
-			timeLeft = TIME_LIMIT;
-			updateTimerDisplay();
-			timerId = setInterval(() => {
-				timeLeft--;
-				updateTimerDisplay();
-				if (timeLeft <= 0) {
-					stopTimer();
-					message.textContent = "Time's up! Resetting...";
-					message.className = 'mt-4 text-center h-6 font-medium text-orange-600';
-					setTimeout(initializeCaptcha, 1200);
-				}
-			}, 1000);
-		}
-
-		// --- Core Logic ---
-		function initializeCaptcha() {
-			const boxRect = captchaBox.getBoundingClientRect();
-			const shapeRect = shape.getBoundingClientRect();
-			const maxX = boxRect.width - shapeRect.width;
-			const maxY = boxRect.height - shapeRect.height;
-			currentX = Math.floor(Math.random() * (maxX - 40)) + 20;
-			currentY = Math.floor(Math.random() * (maxY - 40)) + 20;
-			shape.style.left = `${currentX}px`;
-			shape.style.top = `${currentY}px`;
-			if (Math.random() > 0.5) shape.classList.add('rounded-full');
-			else shape.classList.remove('rounded-full');
-			message.textContent = '';
-			message.className = 'mt-4 text-center h-6 font-medium';
-			if (!permissionOverlay.classList.contains('hidden')) return;
-			startTimer();
-		}
-
-		function updateShapePosition() {
-			shape.style.left = `${currentX}px`;
-			shape.style.top = `${currentY}px`;
-		}
-
-		// --- Tilt Controls ---
-		function handleOrientation(event) {
-			if (neutralBeta === null || neutralGamma === null) {
-				neutralBeta = event.beta;
-				neutralGamma = event.gamma;
+			// --- Timer ---
+			function stopTimer() {
+				clearInterval(timerId);
+				timerId = null;
 			}
-			const deltaBeta = event.beta - neutralBeta;
-			const deltaGamma = event.gamma - neutralGamma;
 
-			currentX += deltaGamma * sensitivity;
-			currentY += deltaBeta * sensitivity;
+			function updateTimerDisplay() {
+				timerDisplay.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
+			}
 
-			const boxRect = captchaBox.getBoundingClientRect();
-			const shapeRect = shape.getBoundingClientRect();
-			currentX = Math.max(0, Math.min(currentX, boxRect.width - shapeRect.width));
-			currentY = Math.max(0, Math.min(currentY, boxRect.height - shapeRect.height));
+			function startTimer() {
+				if (timerId) stopTimer();
+				timeLeft = TIME_LIMIT;
+				updateTimerDisplay();
+				timerId = setInterval(() => {
+					timeLeft--;
+					updateTimerDisplay();
+					if (timeLeft <= 0) {
+						stopTimer();
+						alert("Time's up! Resetting...");
+						setTimeout(initializeCaptcha, 1200);
+					}
+				}, 1000);
+			}
 
-			requestAnimationFrame(updateShapePosition);
-		}
+			// --- Core Logic ---
+			function initializeCaptcha() {
+				const boxRect = captchaBox.getBoundingClientRect();
+				const shapeRect = shape.getBoundingClientRect();
+				const maxX = boxRect.width - shapeRect.width;
+				const maxY = boxRect.height - shapeRect.height;
+				const centerX = boxRect.width / 2;
+				const centerY = boxRect.height / 2;
 
-		function startTiltControls() {
-			window.addEventListener('deviceorientation', handleOrientation);
-		}
+				// Calculate the outer 10% boundaries
+				const outerX = maxX * 0.1;
+				const outerY = maxY * 0.1;
 
-		// --- Button/Key Controls ---
-		function setupDesktopControls() {
-			controlsContainer.innerHTML = `
+				// Randomly choose which outer region to spawn in (top, right, bottom, or left)
+				const region = Math.floor(Math.random() * 4);
+
+				switch (region) {
+					case 0: // Top
+						currentX = Math.random() * maxX;
+						currentY = Math.random() * outerY;
+						break;
+					case 1: // Right
+						currentX = maxX - Math.random() * outerX;
+						currentY = Math.random() * maxY;
+						break;
+					case 2: // Bottom
+						currentX = Math.random() * maxX;
+						currentY = maxY - Math.random() * outerY;
+						break;
+					case 3: // Left
+						currentX = Math.random() * outerX;
+						currentY = Math.random() * maxY;
+						break;
+				}
+
+				shape.style.left = `${currentX}px`;
+				shape.style.top = `${currentY}px`;
+				if (Math.random() > 0.5) shape.classList.add('rounded-full');
+				else shape.classList.remove('rounded-full');
+				if (!permissionOverlay.classList.contains('hidden')) return;
+				startTimer();
+			}
+
+			function updateShapePosition() {
+				shape.style.left = `${currentX}px`;
+				shape.style.top = `${currentY}px`;
+			}
+
+			// --- Tilt Controls ---
+			function handleOrientation(event) {
+				if (neutralBeta === null || neutralGamma === null) {
+					neutralBeta = event.beta;
+					neutralGamma = event.gamma;
+				}
+				const deltaBeta = event.beta - neutralBeta;
+				const deltaGamma = event.gamma - neutralGamma;
+
+				currentX += deltaGamma * sensitivity;
+				currentY += deltaBeta * sensitivity;
+
+				const boxRect = captchaBox.getBoundingClientRect();
+				const shapeRect = shape.getBoundingClientRect();
+				currentX = Math.max(0, Math.min(currentX, boxRect.width - shapeRect.width));
+				currentY = Math.max(0, Math.min(currentY, boxRect.height - shapeRect.height));
+
+				requestAnimationFrame(updateShapePosition);
+			}
+
+			function startTiltControls() {
+				window.addEventListener('deviceorientation', handleOrientation);
+			}
+
+			// --- Button/Key Controls ---
+			function setupDesktopControls() {
+				controlsContainer.innerHTML = `
                     <div></div>
                     <button id="up-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
                     <div></div>
@@ -222,120 +284,118 @@
                     <button id="down-btn" class="control-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg flex items-center justify-center transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7 7 7-7"/><path d="M12 5v14"/></svg></button>
                     <div></div>`;
 
-			document.getElementById('up-btn').addEventListener('click', () => moveShape(0, -moveStep));
-			document.getElementById('down-btn').addEventListener('click', () => moveShape(0, moveStep));
-			document.getElementById('left-btn').addEventListener('click', () => moveShape(-moveStep, 0));
-			document.getElementById('right-btn').addEventListener('click', () => moveShape(moveStep, 0));
+				document.getElementById('up-btn').addEventListener('click', () => moveShape(0, -moveStep));
+				document.getElementById('down-btn').addEventListener('click', () => moveShape(0, moveStep));
+				document.getElementById('left-btn').addEventListener('click', () => moveShape(-moveStep, 0));
+				document.getElementById('right-btn').addEventListener('click', () => moveShape(moveStep, 0));
 
-			document.addEventListener('keydown', (e) => {
-				if (isMobile) return;
-				switch (e.key) {
-					case 'ArrowUp':
-						e.preventDefault();
-						moveShape(0, -moveStep);
-						break;
-					case 'ArrowDown':
-						e.preventDefault();
-						moveShape(0, moveStep);
-						break;
-					case 'ArrowLeft':
-						e.preventDefault();
-						moveShape(-moveStep, 0);
-						break;
-					case 'ArrowRight':
-						e.preventDefault();
-						moveShape(moveStep, 0);
-						break;
+				document.addEventListener('keydown', (e) => {
+					if (isMobile) return;
+					switch (e.key) {
+						case 'ArrowUp':
+							e.preventDefault();
+							moveShape(0, -moveStep);
+							break;
+						case 'ArrowDown':
+							e.preventDefault();
+							moveShape(0, moveStep);
+							break;
+						case 'ArrowLeft':
+							e.preventDefault();
+							moveShape(-moveStep, 0);
+							break;
+						case 'ArrowRight':
+							e.preventDefault();
+							moveShape(moveStep, 0);
+							break;
+					}
+				});
+			}
+
+			function moveShape(dx, dy) {
+				const newX = currentX + dx, newY = currentY + dy;
+				const boxRect = captchaBox.getBoundingClientRect();
+				const shapeRect = shape.getBoundingClientRect();
+				currentX = Math.max(0, Math.min(newX, boxRect.width - shapeRect.width));
+				currentY = Math.max(0, Math.min(newY, boxRect.height - shapeRect.height));
+				updateShapePosition();
+			}
+
+			// --- Verification ---
+			verifyBtn.addEventListener('click', () => {
+				const boxCenterX = Math.round(captchaBox.offsetWidth / 2);
+				const boxCenterY = Math.round(captchaBox.offsetHeight / 2);
+				const shapeCenterX = Math.round(currentX + (shape.offsetWidth / 2));
+				const shapeCenterY = Math.round(currentY + (shape.offsetHeight / 2));
+
+				const isCentered = Math.abs(boxCenterX - shapeCenterX) <= 2 && Math.abs(boxCenterY - shapeCenterY) <= 2;
+
+				if (isCentered) {
+					stopTimer();
+					if (isMobile) window.removeEventListener('deviceorientation', handleOrientation);
+					window.parent.postMessage('success', '*');
+				} else {
+					alert('Not quite. Try again.');
+					setTimeout(initializeCaptcha, 1000);
 				}
 			});
-		}
 
-		function moveShape(dx, dy) {
-			const newX = currentX + dx, newY = currentY + dy;
-			const boxRect = captchaBox.getBoundingClientRect();
-			const shapeRect = shape.getBoundingClientRect();
-			currentX = Math.max(0, Math.min(newX, boxRect.width - shapeRect.width));
-			currentY = Math.max(0, Math.min(newY, boxRect.height - shapeRect.height));
-			updateShapePosition();
-		}
+			// --- INITIAL SETUP ---
+			function main() {
+				// Check for device orientation event support
+				const ua = navigator.userAgent || navigator.vendor;
+				if (
+					typeof DeviceOrientationEvent !== 'undefined' &&
+					typeof DeviceOrientationEvent.requestPermission === 'function'
+				) {
+					// iOS 13+ devices
+					isMobile = true;
+				} else if (
+					(/android|iphone|ipad|ipod|mobile|windows phone/i.test(ua)) &&
+					'ondeviceorientation' in window
+				) {
+					isMobile = true;
+				}
 
-		// --- Verification ---
-		verifyBtn.addEventListener('click', () => {
-			const boxCenterX = Math.round(captchaBox.offsetWidth / 2);
-			const boxCenterY = Math.round(captchaBox.offsetHeight / 2);
-			const shapeCenterX = Math.round(currentX + (shape.offsetWidth / 2));
-			const shapeCenterY = Math.round(currentY + (shape.offsetHeight / 2));
+				if (isMobile) {
+					instruction.textContent = "Tilt your phone to move the shape to the center of the box.";
+					controlsContainer.style.display = 'none';
+					permissionOverlay.style.display = 'flex';
 
-			const isCentered = Math.abs(boxCenterX - shapeCenterX) <= 2 && Math.abs(boxCenterY - shapeCenterY) <= 2;
-
-			if (isCentered) {
-				stopTimer();
-				message.textContent = 'Verified! 🎉';
-				message.className = 'mt-4 text-center h-6 font-medium text-green-600';
-				if (isMobile) window.removeEventListener('deviceorientation', handleOrientation);
-				window.parent.postMessage('success', '*');
-			} else {
-				message.textContent = 'Not quite. Try again.';
-				message.className = 'mt-4 text-center h-6 font-medium text-red-600';
-				setTimeout(initializeCaptcha, 1000);
-			}
-		});
-
-		// --- INITIAL SETUP ---
-		function main() {
-			// Check for device orientation event support
-			const ua = navigator.userAgent || navigator.vendor;
-			if (
-				typeof DeviceOrientationEvent !== 'undefined' &&
-				typeof DeviceOrientationEvent.requestPermission === 'function'
-			) {
-				// iOS 13+ devices
-				isMobile = true;
-			} else if (
-				(/android|iphone|ipad|ipod|mobile|windows phone/i.test(ua)) &&
-				'ondeviceorientation' in window
-			) {
-				isMobile = true;
-			}
-
-			if (isMobile) {
-				instruction.textContent = "Tilt your phone to move the shape to the center of the box.";
-				controlsContainer.style.display = 'none';
-				permissionOverlay.style.display = 'flex';
-
-				startBtn.addEventListener('click', async () => {
-					permissionError.textContent = '';
-					if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-						try {
-							const permissionState = await DeviceOrientationEvent.requestPermission();
-							if (permissionState === 'granted') {
-								startTiltControls();
-								permissionOverlay.style.display = 'none';
-								initializeCaptcha();
-							} else {
-								permissionError.textContent = 'Permission denied. Please refresh and allow motion sensor access.';
+					startBtn.addEventListener('click', async () => {
+						permissionError.textContent = '';
+						if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+							try {
+								const permissionState = await DeviceOrientationEvent.requestPermission();
+								if (permissionState === 'granted') {
+									startTiltControls();
+									permissionOverlay.style.display = 'none';
+									initializeCaptcha();
+								} else {
+									permissionError.textContent = 'Permission denied. Please refresh and allow motion sensor access.';
+								}
+							} catch (error) {
+								permissionError.textContent = 'Permission request was cancelled or failed.';
 							}
-						} catch (error) {
-							permissionError.textContent = 'Permission request was cancelled or failed.';
+						} else {
+							// For Android and other devices that don't need explicit permission
+							startTiltControls();
+							permissionOverlay.style.display = 'none';
+							initializeCaptcha();
 						}
-					} else {
-						// For Android and other devices that don't need explicit permission
-						startTiltControls();
-						permissionOverlay.style.display = 'none';
-						initializeCaptcha();
-					}
-				}, {once: true});
+					}, { once: true });
 
-			} else {
-				// Desktop setup
-				isMobile = false;
-				setupDesktopControls();
-				setTimeout(initializeCaptcha, 100);
+				} else {
+					// Desktop setup
+					isMobile = false;
+					setupDesktopControls();
+					setTimeout(initializeCaptcha, 100);
+				}
 			}
-		}
 
-		main();
-	});
-</script>
+			main();
+		});
+	</script>
 </body>
+
 </html>
